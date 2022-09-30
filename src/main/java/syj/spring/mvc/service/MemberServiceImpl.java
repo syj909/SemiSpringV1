@@ -21,5 +21,11 @@ public class MemberServiceImpl implements MemberService{
 		
 		return isInsert;
 	}
+
+	@Override
+	public MemberVO readOneMember() {
+		// TODO Auto-generated method stub
+		return mdao.selectOneMember();
+	}
 	
 }
