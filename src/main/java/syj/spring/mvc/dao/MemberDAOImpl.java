@@ -64,9 +64,18 @@ public class MemberDAOImpl implements MemberDAO{
 			m.setEmail(rs.getString("email"));
 			m.setRegdate(rs.getString("regdate"));
 			
-			return m;
+			return m;	
 		};
 		return jdbcTemplate.queryForObject(sql, null, memberMapper);
+	}
+
+	@Override
+	public int selectOneMember(MemberVO mvo) {
+		String sql = "select count(mno) cnt from member where userid = ? and passwd = ?";
+		
+		Object[] params = { mvo.getUserid(), mvo.getPasswd() };
+		
+		return jdbcTemplate.queryForObject(sql, params, Integer.class);
 	}
 	
 	/*

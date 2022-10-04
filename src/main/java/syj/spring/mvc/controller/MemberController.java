@@ -1,5 +1,7 @@
 package syj.spring.mvc.controller;
 
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +43,25 @@ public class MemberController {
 		return "join/login";
 	}
 	
-	@PostMapping("/login")
-	public String loginok() {
-		return "redirect:/myinfo";
+	@PostMapping("/login") // 로그인처리
+	public String loginok(MemberVO mvo, HttpSession sess) {
+		String returnPage = "join/lgnfail";
+		
+		if(msrv.checkLogin(mvo)) {
+			sess.setAttribute("m", mvo);
+			returnPage = "redirect:/myinfo";	
+		}
+		
+		
+		return returnPage;
+	}
+	
+	@GetMapping("/logout")
+	public String logout(HttpSession sess) {
+		
+		sess.invalidate();
+		
+		return "redirect:/";
 	}
 	
 	@GetMapping("/myinfo")

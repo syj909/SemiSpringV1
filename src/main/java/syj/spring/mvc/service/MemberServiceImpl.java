@@ -27,5 +27,16 @@ public class MemberServiceImpl implements MemberService{
 		// TODO Auto-generated method stub
 		return mdao.selectOneMember();
 	}
+
+	@Override
+	public boolean checkLogin(MemberVO mvo) {
+		boolean isLogin = false;
+		
+		if(mdao.selectOneMember(mvo) > 0) {
+			isLogin = true;
+		}
+		
+		return isLogin;
+	}
 	
 }
