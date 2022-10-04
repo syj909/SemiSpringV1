@@ -23,7 +23,7 @@ layout:decorate="~{fragments/layout}">
 			</div>
 			<div>
 				<label for="uid">작성자</label>
-				<input type="text" name="userid" id="uid" value="abc123" readonly>
+				<input type="text" name="userid" id="uid" th:value="${session.m.userid}" readonly>
 			</div>
 			<div>
 				<label for="ctt" class="dragup">내용</label>

@@ -24,10 +24,15 @@ public class BoardServiceImpl implements BoardService{
 	}
 
 	@Override
-	public List<BoardVO> readBoard() {
+	public List<BoardVO> readBoard(int snum) {
 
 		
-		return bdao.selectBoard();
+		return bdao.selectBoard(snum);
+	}
+
+	@Override
+	public BoardVO readOneBoard(String bno) {
+		return bdao.selectOneBoard(bno);
 	}
 
 }

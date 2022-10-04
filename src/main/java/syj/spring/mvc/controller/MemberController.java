@@ -27,7 +27,7 @@ public class MemberController {
 		String returnPage = "join/join";
 		
 		if(sess.getAttribute("m") != null) {
-			returnPage = "redirect:/";
+			returnPage = "redirect:/myinfo";
 		} 
 		return returnPage;
 	}
