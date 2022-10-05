@@ -32,12 +32,27 @@ public class BoardController {
 	/* 1page : 1번째~25번째 게시글 읽어옴 */
 	/* 2page : 26번째~50번째 게시글 읽어옴 */
 	/* npage : (n-1) * 25 + 1번째 ~ 25 * n번째 게시글 읽어옴 */
+	
+	/* 총페이지 수가 27일 때 */
+	/* cpg = 1 : 1 2 3 4 5 6 7 8 9 10 */
+	/* cpg = 5 : 1 2 3 4 5 6 7 8 9 10 */
+	/* cpg = 9 : 1 2 3 4 5 6 7 8 9 10 */
+	/* cpg = 10 : 1 2 3 4 5 6 7 8 9 10 */
+	/* cpg = 11 : 11 12 13 14 15 16 17 18 19 20 */
+	/* cpg = 17 : 11 12 13 14 15 16 17 18 19 20 */
+	/* cpg = 23 : 21 22 23 24 25 26 27 */
+	/* ((Integer.parseInt(cpg) - 1 ) / 10) * + 1; */ 
 	@GetMapping("/list")
 	public String list(Model m, String cpg) {
 		int perPage = 25;
-		int snum = (Integer.parseInt(cpg)- 1) * perPage;
-		
+		if (cpg==null || cpg.equals("")) cpg = "1";
+		int cpage = Integer.parseInt(cpg);
+		int snum = (cpage- 1) * perPage;
+		int stpgn = ((cpage - 1 ) / 10) * 10 + 1;
+
 		m.addAttribute("bdlist", bsrv.readBoard(snum));
+		m.addAttribute("stpgn", stpgn);
+		//m.addAttribute("cpg", Integer.parseInt(cpage));
 		
 		return "board/list";
 	}
@@ -56,11 +71,8 @@ public class BoardController {
 	
 	@PostMapping("/write")
 	public String writeok(BoardVO bvo) {
-		logger.info("writeok 호출! {}", bvo);
+		bsrv.newBoard(bvo);
 		
-		// 회원정보 저장
-		if(bsrv.newBoard(bvo)) logger.info("글작성 성공");
-		
-		return "redirect:/list";
+		return "redirect:/list?cpg=1";
 	}
 }
