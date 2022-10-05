@@ -24,10 +24,10 @@ public class BoardServiceImpl implements BoardService{
 	}
 
 	@Override
-	public List<BoardVO> readBoard(int snum) {
+	public List<BoardVO> readBoard(int snum, String fkey, String fval) {
 
 		
-		return bdao.selectBoard(snum);
+		return bdao.selectBoard(snum, fkey, fval);
 	}
 
 	@Override
@@ -36,8 +36,8 @@ public class BoardServiceImpl implements BoardService{
 	}
 
 	@Override
-	public int endpgn() {
-		return bdao.endpgn();
+	public int endpgn(String fkey, String fval) {
+		return bdao.endpgn(fkey, fval);
 	}
 
 }

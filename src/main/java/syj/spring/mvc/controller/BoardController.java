@@ -43,17 +43,20 @@ public class BoardController {
 	/* cpg = 23 : 21 22 23 24 25 26 27 */
 	/* ((Integer.parseInt(cpg) - 1 ) / 10) * + 1; */ 
 	@GetMapping("/list")
-	public String list(Model m, String cpg) {
+	public String list(Model m, String cpg, String fkey, String fval) {
 		int perPage = 25;
 		
 		if (cpg==null || cpg.equals("")) cpg = "1";
+		if (fkey==null) fkey = "";
+		if (fval==null) fkey = "";
 		int cpage = Integer.parseInt(cpg);
 		int snum = (cpage- 1) * perPage;
 		int stpgn = ((cpage - 1 ) / 10) * 10 + 1;
 
-		m.addAttribute("bdlist", bsrv.readBoard(snum));
-		m.addAttribute("endpgn", bsrv.endpgn());
+		m.addAttribute("bdlist", bsrv.readBoard(snum, fkey, fval));
+		m.addAttribute("endpgn", bsrv.endpgn(fkey, fval));
 		m.addAttribute("stpgn", stpgn);
+		m.addAttribute("fqry", "&fkey=" + fkey + "&fval=" + fval );
 		//m.addAttribute("cpg", Integer.parseInt(cpage));
 		
 		return "board/list";

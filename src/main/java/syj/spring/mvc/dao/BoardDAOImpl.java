@@ -42,14 +42,38 @@ public class BoardDAOImpl implements BoardDAO{
 		return simpleInsert.execute(params);
 	}
 
+	// 동적 질의문
+	// 조건에 따라 실행할 질의문의 형태가 바뀌는 것
+	// 제목으로 검색 : select * from board where title = ?
+	// 작성자로 검색 : select * from board where userid = ?
+	// 본문으로 검색 : select * from board where contents = ?
+	// => select * from board where ? = ? (실행x)
+	// 테이블명, 컬럼명은 매개변수화할 수 없음.
 	@Override
-	public List<BoardVO> selectBoard(int snum) {
-		String sql = "select bno, title, userid, regdate, views from board" + " order by bno desc limit :snum, 25";
+	public List<BoardVO> selectBoard(int snum, String fkey, String fval) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("select bno, title, userid, regdate, views from board");
+		switch(fkey) {
+			case "title" :
+				sql.append(" where title like :fval");
+				break;
+			case "userid" :
+				sql.append(" where userid like :fval");
+				break;
+			case "contents" :
+				sql.append(" where contents like :fval");
+				break;
+			default:
+				break;
+		}
+		
+		sql.append(" order by bno desc limit :snum, 25");
 		
 		Map<String, Object> params = new HashMap<>();
 		params.put("snum", snum);
+		params.put("fval", "%" + fval + "%");
 		
-		return jdbcNamedTemplate.query(sql, params, boardMapper);
+		return jdbcNamedTemplate.query(sql.toString(), params, boardMapper);
 	}
 
 	@Override
@@ -77,10 +101,30 @@ public class BoardDAOImpl implements BoardDAO{
 	}
 
 	@Override
-	public int endpgn() {
-		String sql = "select ceil(count(bno)/25) cnt from board";
+	public int endpgn(String fkey, String fval) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("select ceil(count(bno)/25) cnt from board");
+		switch(fkey) {
+		case "title" :
+			sql.append(" where title like :fval");
+			break;
+		case "userid" :
+			sql.append(" where userid like :fval");
+			break;
+		case "contents" :
+			sql.append(" where contents like :fval");
+			break;
+		default:
+			break;
+		}
+		Map<String, Object> params = new HashMap<>();
+		params.put("fval", "%" + fval + "%");
 		
-		return jdbcTemplate.queryForObject(sql, Integer.class);
+		int count = jdbcNamedTemplate.queryForObject(sql.toString(), params, Integer.class);
+		System.out.println(count);
+		
+		return jdbcNamedTemplate.queryForObject(sql.toString(), params, Integer.class);
+		//return jdbcTemplate.queryForObject(sql.toString(), Integer.class);
 	}
 
 }

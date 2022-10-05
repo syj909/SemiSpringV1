@@ -10,12 +10,13 @@ layout:decorate="~{fragments/layout}">
 		.newbtn { border: none; text-align: right; }
 		.pgnav { border: none; text-align: center; }
 		.cpage { color: red; font-weight: bold; font-size: 30px }
+		.alignleft { display:inline-block; width: 89%; text-align: left; }
 	</style>
 </th:block>
 
 <th:block layout:fragment="main">
 	<div id="main" th:with="cpg=${(param.cpg == null)? 1:T(java.lang.Integer).parseInt(param.cpg)}">
-		<h1>게시판 목록 ( [[${param.cpg}]] / [[${endpgn}]] )</h1>
+		<h1>게시판 목록 ( [[${param.cpg}]] / [[${endpgn}]] ) ( [[${fqry}]] )</h1>
 	<table>
 		<colgroup>
 			<col style="width:10%">
@@ -27,6 +28,16 @@ layout:decorate="~{fragments/layout}">
 		<thead>
 			<tr>
 				<td colspan="5" class="newbtn">
+					<span class="alignleft" th:if="${session.m!=null}">
+						<select name="fkey" id="fkey">
+							<option value="">--------</option>
+							<option value="title">제목</option>
+							<option value="userid">작성자</option>
+							<option value="content">본문내용</option>
+						</select>
+						<input type="text" name="fval" id="fval">
+						<button type="button" id="findbtn">검색하기</button>
+					</span>
 					<button th:disabled="${session.isEmpty()}" type="button" id="newbtn">새글쓰기</button>
 				</td>
 			</tr>
@@ -48,20 +59,20 @@ layout:decorate="~{fragments/layout}">
 			</tr>
 			<tr>
 				<td colspan="5" class="pgnav">
-				<a th:if="${cpg!=1}" th:href="@{/list(cpg=1)}">[처음]</a> 
-				<a th:if="${cpg!=1}" th:href="@{/list(cpg=${cpg - 1})}">[이전]</a> 
-				<a th:if="${cpg>10}" th:href="@{/list(cpg=${cpg - 10})}">[이전10]</a> 
-				<th:block th:each="i : ${#numbers.sequence(0, 9)}">
-					<th:block th:if="${(stpgn + i)<=endpgn}">
-						<span th:text="${stpgn + i}" th:if="${cpg == (stpgn + i)}" class="cpage"></span>
-						<span th:unless="${cpg == (stpgn + i)}">
-							<a th:href="@{/list(cpg=${stpgn + i})}">[[${stpgn + i}]]</a>
-						</span>
+					<a th:if="${cpg!=1}" th:href="@{'/list?cpg=1' + ${fqry}}">[처음]</a> 
+					<a th:if="${cpg!=1}" th:href="@{'/list?cpg=' + ${cpg - 1} + ${fqry}}">[이전]</a> 
+					<a th:if="${cpg>10}" th:href="@{'/list?cpg=' + ${cpg - 10} + ${fqry}}">[이전10]</a> 
+					<th:block th:each="i : ${#numbers.sequence(0, 9)}">
+						<th:block th:if="${(stpgn + i)<=endpgn}">
+							<span th:text="${stpgn + i}" th:if="${cpg == (stpgn + i)}" class="cpage"></span>
+							<span th:unless="${cpg == (stpgn + i)}">
+								<a th:href="@{/list(cpg=${stpgn + i}, fkey=${param.fkey}, fval=${param.fval})}">[[${stpgn + i}]]</a>
+							</span>
+						</th:block>
 					</th:block>
-				</th:block>
-				<a th:if="${cpg<endpgn}" th:href="@{/list(cpg=${cpg + 1})}">[다음]</a> 
-				<a th:if="${cpg<(endpgn-10)}" th:href="@{/list(cpg=${cpg + 10})}">[다음10]</a> 
-				<a th:if="${cpg!=endpgn}" th:href="@{/list(cpg=${endpgn})}">[끝]</a> 
+					<a th:if="${cpg<endpgn}" th:href="@{'/list?cpg=' + ${cpg + 1} + ${fqry}}">[다음]</a> 
+					<a th:if="${cpg<(endpgn-10)}" th:href="@{'/list?cpg=' + ${cpg + 10} + ${fqry}}">[다음10]</a> 
+					<a th:if="${cpg!=endpgn}" th:href="@{'/list?cpg=' + ${endpgn} + ${fqry}}">[끝]</a> 
 				</td>
 			</tr>
 		</tbody>
@@ -73,6 +84,23 @@ layout:decorate="~{fragments/layout}">
 <script>
 	let newbtn = document.getElementById('newbtn');
 	newbtn.addEventListener('click', go2new);
+	
+	// emcascript 2020 지원시 최신 브라우저 사용시
+	// cannot read properties of null 세련되게 처리하기
+	// optional chaining -> 객체명?.addEventListener
+	// 검색시 요청 url : /list?fkey=title&fval=테스트
+	let findbtn = document.getElementById('findbtn');
+	findbtn?.addEventListener('click', () => {
+		let fkey = document.querySelector('#fkey');
+		let fval = document.querySelector('#fval');
+		if(fval.value == ''){
+			alert('검색할 내용을 입력하세요.');	
+		}else{
+			let qry = '?fkey=' + fkey.value;
+			qry += '&fval=' + fval.value;
+			location.href = '/list' + qry;
+		}
+	});
 	
 	function go2new(){
 		location.href = '/write';

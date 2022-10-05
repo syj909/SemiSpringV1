@@ -8,10 +8,10 @@ public interface BoardService {
 
 	boolean newBoard(BoardVO bvo);
 
-	List<BoardVO> readBoard(int snum);
+	List<BoardVO> readBoard(int snum, String fkey, String fval);
 
 	BoardVO readOneBoard(String bno);
 
-	int endpgn();
+	int endpgn(String fkey, String fval);
 
 }
