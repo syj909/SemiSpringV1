@@ -35,4 +35,9 @@ public class BoardServiceImpl implements BoardService{
 		return bdao.selectOneBoard(bno);
 	}
 
+	@Override
+	public int endpgn() {
+		return bdao.endpgn();
+	}
+
 }

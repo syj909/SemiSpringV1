@@ -45,12 +45,14 @@ public class BoardController {
 	@GetMapping("/list")
 	public String list(Model m, String cpg) {
 		int perPage = 25;
+		
 		if (cpg==null || cpg.equals("")) cpg = "1";
 		int cpage = Integer.parseInt(cpg);
 		int snum = (cpage- 1) * perPage;
 		int stpgn = ((cpage - 1 ) / 10) * 10 + 1;
 
 		m.addAttribute("bdlist", bsrv.readBoard(snum));
+		m.addAttribute("endpgn", bsrv.endpgn());
 		m.addAttribute("stpgn", stpgn);
 		//m.addAttribute("cpg", Integer.parseInt(cpage));
 		
