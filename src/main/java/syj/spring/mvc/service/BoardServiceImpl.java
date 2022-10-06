@@ -20,7 +20,7 @@ public class BoardServiceImpl implements BoardService{
 		
 		// 글작성이 성공했으면 true를 리턴
 		if(bdao.insertBoard(bvo) > 0) isInsert = true;
-		return false;
+		return isInsert;
 	}
 
 	@Override
@@ -38,6 +38,24 @@ public class BoardServiceImpl implements BoardService{
 	@Override
 	public int endpgn(String fkey, String fval) {
 		return bdao.endpgn(fkey, fval);
+	}
+
+	@Override
+	public boolean deleteBoard(String bno) {
+		boolean isDelte = false;
+		
+		// 글작성이 성공했으면 true를 리턴
+		if(bdao.deleteBoard(bno) > 0) isDelte = true;
+		return isDelte;
+	}
+
+	@Override
+	public boolean modifyBoard(BoardVO bvo) {
+		boolean isUpdate = false;
+		
+		// 글작성이 성공했으면 true를 리턴
+		if(bdao.updateBoard(bvo) > 0) isUpdate = true;
+		return isUpdate;
 	}
 
 }

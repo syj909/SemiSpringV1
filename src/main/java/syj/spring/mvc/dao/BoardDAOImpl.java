@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import syj.spring.mvc.vo.BoardVO;
@@ -125,6 +126,27 @@ public class BoardDAOImpl implements BoardDAO{
 		
 		return jdbcNamedTemplate.queryForObject(sql.toString(), params, Integer.class);
 		//return jdbcTemplate.queryForObject(sql.toString(), Integer.class);
+	}
+
+	@Override
+	public int deleteBoard(String bno) {
+		String sql = "delete from board where bno = ?";
+		
+		Object[] param = {bno};
+		
+		return jdbcTemplate.update(sql, param);
+	}
+
+	@Override
+	public int updateBoard(BoardVO bvo) {
+		String sql = "update board set title = :title, contents = :contents, regdate = current_timestamp() where bno = :bno";
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("title", bvo.getTitle());
+		params.put("contents", bvo.getContents());
+		params.put("bno", bvo.getBno());
+		
+		return jdbcNamedTemplate.update(sql, params);
 	}
 
 }

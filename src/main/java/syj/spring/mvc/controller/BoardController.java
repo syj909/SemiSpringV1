@@ -80,4 +80,37 @@ public class BoardController {
 		
 		return "redirect:/list?cpg=1";
 	}
+	
+	@GetMapping("/delete")
+	public String delete(HttpSession sess, String bno) {
+		String returnPage = "redirect:/list?cpg=1";
+		if(sess.getAttribute("m")==null) {
+			returnPage = "redirect:/login";
+		}
+		bsrv.deleteBoard(bno);
+		
+		return returnPage;
+	}
+	
+	@GetMapping("/update")
+	public String modify(HttpSession sess, String bno, Model m) {
+		String returnPage = "board/update";
+		if(sess.getAttribute("m")==null) {
+			returnPage = "redirect:/login";
+		}
+		m.addAttribute("bd", bsrv.readOneBoard(bno));
+		
+		return returnPage;
+	}
+	
+	@PostMapping("/update")
+	public String modifyok(HttpSession sess, BoardVO bvo) {
+		String returnPage = "redirect:/view?bno=" + bvo.getBno();
+		if(sess.getAttribute("m")==null) {
+			returnPage = "redirect:/login";
+		}
+		bsrv.modifyBoard(bvo);
+		
+		return returnPage;
+	}
 }

@@ -16,7 +16,7 @@ layout:decorate="~{fragments/layout}">
 
 <th:block layout:fragment="main">
 	<div id="main" th:with="cpg=${(param.cpg == null)? 1:T(java.lang.Integer).parseInt(param.cpg)}">
-		<h1>게시판 목록 ( [[${param.cpg}]] / [[${endpgn}]] ) ( [[${fqry}]] )</h1>
+		<h1 th:with="qry=(${#httpServletRequest.queryString})">게시판 목록 ( [[${param.cpg}]] / [[${endpgn}]] ) ( [[${qry}]] )</h1>
 	<table>
 		<colgroup>
 			<col style="width:10%">

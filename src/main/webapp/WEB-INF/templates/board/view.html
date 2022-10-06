@@ -40,8 +40,10 @@ layout:decorate="~{fragments/layout}">
 			<div>
 				<label></label>
 				<button type="button" id="go2list">목록으로</button>
-				<button type="button" id="go2update">수정하기</button>
-				<button type="button" id="go2delete">삭제하기</button>
+				<th:block th:if="${session.m.userid = bd.userid}">
+					<button type="button" id="go2update">수정하기</button>
+					<button type="button" id="go2delete">삭제하기</button>
+				</th:block>
 			</div>
 		</div>
 	</div>
@@ -55,17 +57,17 @@ layout:decorate="~{fragments/layout}">
 		let cnts = document.querySelector('#cnts');
 		
 		go2list.addEventListener('click', go2lists);
-		go2update.addEventListener('click', go2updates);
-		go2delete.addEventListener('click', go2deletes);
+		go2update?.addEventListener('click', go2updates);
+		go2delete?.addEventListener('click', go2deletes);
 		
 		function go2lists(){ location.href = '/list'; }
 		function go2updates(){ 
 			if (confirm('정말로 수정하시겠습니까?')) {
-				location.href = '/upd?bno=[[${param.bno}]]';
+				location.href = '/update?bno=[[${param.bno}]]';
 			}; }
 		function go2deletes(){ 
 			if (confirm('정말로 삭제하시겠습니까?')) {
-			location.href = '/del?bno=[[${param.bno}]]';
+			location.href = '/delete?bno=[[${param.bno}]]';
 		}; }
 		
 		cnts.setAttribute('style', 'white-space: pre;')

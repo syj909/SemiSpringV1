@@ -1,0 +1,57 @@
+<html xmlns:th=http://www.thymeleaf.org
+xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{fragments/layout}">
+
+<th:block layout:fragment="mystyle">
+<style>
+	/* 새글쓰기에 대한 스타일*/
+	#write { border: 1px solid blue; width: 500px; margin: 0 auto; }
+	#write div { margin-bottom: 10px; }
+	#write label { width: 110px; display: inline-block; text-align: right; font-weight: bold; }
+	#write button:first-child { margin-left: 115px; }
+	input:hover, textarea:hover { background: mintcream }
+	.dragup { vertical-align: top; }
+</style>
+</th:block>
+<th:block layout:fragment="main">
+	<div id="main">
+		<h1>게시글 수정하기</h1>
+		<form name="write" id="write">
+			<div>
+				<label for="tle">제목</label>
+				<input type="text" name="title" id=tle th:value="${bd.title}">
+			</div>
+			<div>
+				<label for="uid">작성자</label>
+				<input type="text" name="userid" id="uid" th:value="${session.m.userid}" readonly>
+			</div>
+			<div>
+				<label for="ctt" class="dragup">내용</label>
+				<textarea cols="45" rows="7" th:text="${bd.contents}" name="contents" id="ctt"></textarea>
+			</div>
+			
+			<div>
+				<button type="button" id="writebtn">수정완료</button>
+				<button type="reset">다시입력</button>
+			</div>
+		</form>
+	</div>
+</th:block>
+	
+<th:block layout:fragment="myscript">
+<script>
+	let writebtn = document.getElementById("writebtn");
+	writebtn.addEventListener('click', checkwriteform);
+	
+	function checkwriteform () {
+		let frm = document.write;
+		if(frm.tle.value == '') alert('제목을 입력하세요.');
+		else if(frm.uid.value == '') alert('작성자를 입력하세요.');
+		else if(frm.ctt.value == '') alert('내용을 입력하세요');
+		else {
+			frm.method = 'post';
+			frm.submit();
+		}
+	}
+</script>
+</th:block>

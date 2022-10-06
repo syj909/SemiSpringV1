@@ -14,4 +14,8 @@ public interface BoardService {
 
 	int endpgn(String fkey, String fval);
 
+	boolean deleteBoard(String bno);
+
+	boolean modifyBoard(BoardVO bvo);
+
 }
