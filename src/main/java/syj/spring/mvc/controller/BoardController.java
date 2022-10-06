@@ -1,7 +1,10 @@
 package syj.spring.mvc.controller;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpSession;
 
+import org.apache.hc.core5.http.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,19 +13,34 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import syj.spring.mvc.service.BoardService;
+import syj.spring.mvc.utils.RecaptchaUtils;
 import syj.spring.mvc.vo.BoardVO;
 
 @Controller
 public class BoardController {
 
 	// bean 클래스로 정의한 경우 @Autowired 생략 가능
-	@Autowired
+	// DI받을 변수가 둘 이상이므로 생성자로 재정의
+//	@Autowired
+//	private BoardService bsrv;
+//	@Autowired
+//	private RecaptchaUtils grcp;
+	
 	private BoardService bsrv;
-
+	private RecaptchaUtils grcp;
+	
+	@Autowired
+	public BoardController(BoardService bsrv, RecaptchaUtils grcp) {
+		this.bsrv = bsrv;
+		this.grcp = grcp;
+	}
+	
 	// 로그 유형 : trace info debug warn error
 	protected Logger logger = LoggerFactory.getLogger(getClass());
+	
 
 	/* 페이징 처리 */
 	/* 페이징당 게시물 수 perpage : 25 */
@@ -74,11 +92,28 @@ public class BoardController {
 		return "board/write";
 	}
 	
+	// captcha 작동원리
+	// captcha 사용시 클라이언트가 생성한 키와
+	// 서버에 설정해 둔 비밀키등을
+	// google의 siteverify에서 비교해서
+	// 인증에 성공하면 list로 redirect 하고
+	// 그렇지 않으면 다시 write로 return
+	// 질의를 위한 질의문자열을 작성
+	// ?secret=비밀키&response=클라이언트응답키
 	@PostMapping("/write")
-	public String writeok(BoardVO bvo) {
-		bsrv.newBoard(bvo);
+	public String writeok(BoardVO bvo, String gcaptcha, RedirectAttributes rda) throws ParseException, IOException {
+		String returnPage = "redirect:/write";
+		//logger.info(gcaptcha);
 		
-		return "redirect:/list?cpg=1";
+		if(grcp.checkCaptcha(gcaptcha)) {
+			bsrv.newBoard(bvo);
+			returnPage = "redirect:/list?cpg=1";
+		} else {
+			rda.addFlashAttribute("bvo", bvo);
+			rda.addFlashAttribute("msg", "자동가입방지 확인 실패했어요!");
+		}
+		
+		return returnPage;
 	}
 	
 	@GetMapping("/delete")
