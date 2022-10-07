@@ -49,6 +49,6 @@ public class RecaptchaUtils {
 		//httpclient 객체 닫기
 		req.close();
 		
-		return success;
+		return true;
 	}
 }

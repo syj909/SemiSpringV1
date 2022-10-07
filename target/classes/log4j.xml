@@ -32,6 +32,9 @@
 	</logger>
 	
 	<logger name="org.springframework.jdbc">
+		<level value="info" />
+	</logger>
+	<logger name="member">
 		<level value="debug" />
 	</logger>
 	<logger name="member">
