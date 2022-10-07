@@ -3,9 +3,13 @@ package syj.spring.mvc.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,6 +22,7 @@ import org.springframework.stereotype.Repository;
 
 import syj.spring.mvc.vo.BoardVO;
 import syj.spring.mvc.vo.MemberVO;
+import syj.spring.mvc.vo.Zipcode;
 
 @Repository("mdao")
 public class MemberDAOImpl implements MemberDAO{
@@ -37,8 +42,12 @@ public class MemberDAOImpl implements MemberDAO{
 	private JdbcTemplate jdbcTemplate;
 	private SimpleJdbcInsert simpleInsert;
 	private NamedParameterJdbcTemplate jdbcNamedTemplate;
-//	private RowMapper<MemberVO> memberMapper = BeanPropertyRowMapper.newInstance(MemberVO.class);
 	
+	@Autowired
+	private SqlSession sqlSession;
+
+	//	private RowMapper<MemberVO> memberMapper = BeanPropertyRowMapper.newInstance(MemberVO.class);
+	private RowMapper<Zipcode> zipcodeMapper = BeanPropertyRowMapper.newInstance(Zipcode.class);
 	public MemberDAOImpl (DataSource datasource) {
 		simpleInsert = new SimpleJdbcInsert(datasource).withTableName("member").usingColumns("userid","passwd","name", "email");
 		
@@ -47,9 +56,8 @@ public class MemberDAOImpl implements MemberDAO{
 	
 	@Override
 	public int insertMember(MemberVO mvo) {
-		SqlParameterSource params = new BeanPropertySqlParameterSource(mvo);
 		
-		return simpleInsert.execute(params);
+		return sqlSession.insert("member.insertMember", mvo);
 	}
 
 	@Override
@@ -78,6 +86,25 @@ public class MemberDAOImpl implements MemberDAO{
 		Object[] params = { mvo.getUserid(), mvo.getPasswd() };
 		
 		return jdbcTemplate.queryForObject(sql, params, Integer.class);
+	}
+
+	@Override
+	public int selectCountUserid(String uid) {
+		String sql = "select count(userid) cnt from member where userid = ?";
+		
+		Object[] param = new Object[] { uid }; 
+		
+		return jdbcTemplate.queryForObject(sql, param, Integer.class);
+	}
+
+	@Override
+	public List<Zipcode> selectZipcode(String dong) {
+		String sql = "select * from zipcode_2013 where dong like :dong";
+		
+		Map<String, Object> param = new HashMap<>();
+		param.put("dong", dong);		
+		
+		return jdbcNamedTemplate.query(sql, param, zipcodeMapper);
 	}
 	
 	/*
